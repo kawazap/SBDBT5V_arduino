@@ -1,0 +1,3 @@
+# SBDBT5V_arduino
+SBDBT5V(http://www.runele.com/ca1/8/)をarduinoで使うコード
+analoghatがまだ実装できてません...
