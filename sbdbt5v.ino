@@ -34,9 +34,18 @@ void loop() {
       else {
         Serial.println("check sum * * ERROR * *");//ダメならエラーを表示。
       }
-
-      String Astickud =  String(c[3], DEC); //左のアナログスティックライトの上下の値を16→10進数へ
-      Serial.println(Astickud);
+      
+      //アナログハットの部分
+      String leftstickx =  String(c[3], DEC); //左のアナログスティックライトの左右の値を16→10進数へ
+      String leftsticky =  String(c[4], DEC); //左のアナログスティックライトの上下の値を16→10進数へ
+      String rightstickx =  String(c[5], DEC); //右のアナログスティックライトの左右の値を16→10進数へ
+      String rightsticky =  String(c[6], DEC); //右のアナログスティックライトの上下の値を16→10進数へ
+      Serial.print(leftstickx);
+      Serial.print(leftsticky);
+      Serial.print(rightstickx);
+      Serial.println(rightsticky);
+       Serial.print("\t");
+      
       //ここから、キー入力に応じて、メッセージを出す。
       if (c[1] == 0x00 ) { //何も押されていなければ静止
         if (c[2] == 0x00 ) { //何も押されていなければ静止
