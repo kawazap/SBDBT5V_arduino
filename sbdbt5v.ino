@@ -2,7 +2,7 @@
 
 
 #define MYRX 12 //デジタル12番ピンはソフトウェアシリアルRX
-#define MYTX 13 //デジタル11番ピンはソフトウェアシリアルTX
+#define MYTX 11 //デジタル11番ピンはソフトウェアシリアルTX
 SoftwareSerial mySerial(MYRX, MYTX);
 
 unsigned char c[8];
