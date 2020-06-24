@@ -1,8 +1,8 @@
 #include <SoftwareSerial.h>
 
 
-#define MYRX 2 //デジタル12番ピンはソフトウェアシリアルRX
-#define MYTX 3 //デジタル11番ピンはソフトウェアシリアルTX
+#define MYRX 12 //デジタル12番ピンはソフトウェアシリアルRX
+#define MYTX 13 //デジタル11番ピンはソフトウェアシリアルTX
 SoftwareSerial mySerial(MYRX, MYTX);
 
 unsigned char c[8];
