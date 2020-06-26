@@ -40,6 +40,12 @@ void loop() {
       String leftsticky =  String(c[4], DEC); //左のアナログスティックライトの上下の値を16→10進数へ
       String rightstickx =  String(c[5], DEC); //右のアナログスティックライトの左右の値を16→10進数へ
       String rightsticky =  String(c[6], DEC); //右のアナログスティックライトの上下の値を16→10進数へ
+      //cast
+      double Leftstickx = leftstickx.toDouble();
+      double Leftsticky = leftsticky.toDOuble();
+      double Righitstickx = rightstickx.toDouble();
+      double Righitsticky = rightsticky.toDOuble();
+      //アナログハットの値表示
       Serial.print(leftstickx);
       Serial.print(leftsticky);
       Serial.print(rightstickx);
