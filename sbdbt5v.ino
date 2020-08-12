@@ -1,78 +1,168 @@
 #include <SoftwareSerial.h>
-
-
 #define MYRX 12 //デジタル12番ピンはソフトウェアシリアルRX
 #define MYTX 11 //デジタル11番ピンはソフトウェアシリアルTX
 SoftwareSerial mySerial(MYRX, MYTX);
-
 unsigned char c[8];
 unsigned long chksum;
-
-
-void setup() {
-  mySerial.begin(2400);//SBDBTとArduinoは2400bps
-  Serial.begin(19200);//シリアルモニター表示
-  c[0] = 0x80; //SBDBTからのシリアル信号の１個目は固定。
+int direction(int x,int y){
+  double deg,rad;
+  int pattern = 0;
+  x -= 64; //中心(0,0)の座標平面に変換
+  y = abs(y -128) - 64;
+  rad = atan2((double)y,(double)x);
+  deg = 180 + (rad * 180.0 /(atan(1.0) * 4.0)); //ラジアンを度に変換し、0<=deg<=360として方向を判別
+  if(abs(x) > 16 || abs(y)> 16){ // x,yが16以下の時は0を返す
+    //pattern = 12;
+    for(int i = 0;i < 12;i++){
+      if(deg >= 0.0 + (i * 30.0) && deg < 30.0 + (i * 30.0))
+        pattern = i + 1;
+    }
+    Serial.print(deg);
+    Serial.print(x);
+  Serial.print(" ");
+  Serial.print(y);
+  Serial.print(" ");
+  Serial.println(pattern);
+  }
+  return pattern;
 }
-
+void setup() {
+  // put your setup code here, to run once:
+   mySerial.begin(2400);//SBDBTとArduinoは2400bps
+    Serial.begin(19200);//シリアルモニター表示
+    c[0] = 0x80; //SBDBTからのシリアル信号の１個目は固定。
+}
+void mortarrun(int pin1,int pin2,int power){
+  if ( 0<=power){
+    analogWrite(pin1,power);
+    analogWrite(pin2,0);
+  }
+  else{
+    analogWrite(pin1,0);
+    analogWrite(pin2,-power);
+  }
+}
+void Stop(){
+}
+  void Up(int x, int y){
+  }
+  void rightup(int power){
+ }
+  void Right(int x, int y){
+ }
+ void rightdown(int power){
+ }
+  void Down(int x, int y){
+ }
+ void leftdown(int power){
+ }
+ void Left(int x, int y){
+ }
+ void leftup(int power){
+ }
 void loop() {
-  //まずは無線からシリアルを読み込む。c[1]とc[2]にキー入力が格納される。
   int i;
-  if (mySerial.available() >= 8) { //8byte以上あるかチェック
-    if (mySerial.read() == 0x80) { //１byte読み込んで0x80のスタートビットかチェック
-      Serial.print(c[0], HEX); //１６進数で数値を表示。
-      Serial.print(",");//コンマで区切る。
-      for (chksum = c[0], i = 1; i < 8; i++) { //スタートビットは読み込み済みなので、次の７個のデータを読み込む。
-        c[i] = mySerial.read();
-        if (i < 7) chksum += c[i];
-        Serial.print(c[i], HEX); //１６進数で数値を表示。
-        Serial.print(",");//}//コンマで区切る。
-      }
-      if (c[7] == (chksum & 0x7F)) { //ボタン部分のみのチェックサムを簡易計算してみる。
-        Serial.println("check sum OK !");//チェックサムOKを表示。
-      }
-      else {
-        Serial.println("check sum * * ERROR * *");//ダメならエラーを表示。
-      }
-      
-      //アナログハットの部分
       String leftstickx =  String(c[3], DEC); //左のアナログスティックライトの左右の値を16→10進数へ
       String leftsticky =  String(c[4], DEC); //左のアナログスティックライトの上下の値を16→10進数へ
       String rightstickx =  String(c[5], DEC); //右のアナログスティックライトの左右の値を16→10進数へ
       String rightsticky =  String(c[6], DEC); //右のアナログスティックライトの上下の値を16→10進数へ
-      //cast
-      double Leftstickx = leftstickx.toDouble();
-      double Leftsticky = leftsticky.toDOuble();
-      double Righitstickx = rightstickx.toDouble();
-      double Righitsticky = rightsticky.toDOuble();
-      //アナログハットの値表示
-      Serial.print(leftstickx);
-      Serial.print(leftsticky);
-      Serial.print(rightstickx);
-      Serial.println(rightsticky);
-       Serial.print("\t");
-      
+      int Lx = leftstickx.toInt();
+      int Ly = leftsticky.toInt();
+      Serial.print(Ly);
+      int powerx = map(abs(Lx-64),0,64,0,200);
+      int powery = map(abs(-64-Ly),0,64,0,200);
+      //Serial.print(powerx); //１６進数で数値を表示。
+      //Serial.print(",");//}//コンマで区切る。
+      //Serial.print(powery); //１６進数で数値を表示。
+      //Serial.println(",");//}//コンマで区切る。
+  // put your main code here, to run repeatedly:
+  if (mySerial.available() >= 8) { //8byte以上あるかチェック
+      if (mySerial.read() == 0x80) { //１byte読み込んで0x80のスタートビットかチェック
+         // Serial.print(c[0], HEX); //１６進数で数値を表示。
+          //Serial.print(",");//コンマで区切る。
+          for (chksum = c[0], i = 1; i < 8; i++) { //スタートビットは読み込み済みなので、次の７個のデータを読み込む。
+            c[i] = mySerial.read();
+            if (i < 7) chksum += c[i];
+            //Serial.print(c[i], HEX); //１６進数で数値を表示。
+            //Serial.print(",");//}//コンマで区切る。
+        }
+        if(Lx <32 || 98 < Lx || Ly <32 || 98 < Ly)
+          switch(direction(Lx,Ly)){
+            case 0:
+              Stop();
+              break;
+            case 1:
+             // Serial.print(F("\r\nLeft"));
+              Right(powerx,powery);
+              break;
+            case 12:
+              //Serial.print(F("\r\nLeft"));
+              Right(powerx,powery);
+              break;
+            case 2:
+              //Serial.print(F("\r\nDown+Left"));
+              //Down_Left();
+              break;
+            case 3:
+              //Serial.print(F("\r\nUp"));
+              Up(powerx,powery);
+              break;
+            case 4:
+             // Serial.print(F("\r\nDown"));
+              Up(powerx,powery);
+              break;
+            case 5:
+              //Serial.print(F("\r\nDown+Right"));
+              //Down_Right();
+              break;
+            case 6:
+             // Serial.print(F("\r\nRight"));
+              Left(powerx,powery);
+              break;
+            case 7:
+             // Serial.print(F("\r\nRight"));
+              Left(powerx,powery);
+              break;
+            case 8:
+             // Serial.print(F("\r\nUp+Right"));
+              //Up_Right();
+              break;
+            case 9:
+            case 10:
+             //Serial.print(F("\r\nDown"));
+              Down(powerx,powery);
+              break;
+            case 11:
+             // Serial.print(F("\r\nDown"));
+              Down(powerx,powery);
+              break;
+            default:
+              Stop();
+              break;
+            }
+            delay(40);
+      if (c[7] == (chksum & 0x7F)) { //ボタン部分のみのチェックサムを簡易計算してみる。
+         // Serial.println("check sum OK !");//チェックサムOKを表示。
+      }
+      else {
+        Serial.println("check sum * * ERROR * *");//ダメならエラーを表示。
+      }
       //ここから、キー入力に応じて、メッセージを出す。
       if (c[1] == 0x00 ) { //何も押されていなければ静止
         if (c[2] == 0x00 ) { //何も押されていなければ静止
-
           Serial.println("* STOP *");
+          Stop();
         }
       }
-      
       if ((c[2] & 0x01) == 0x01 && (c[2] & 0x02) == 0x02) {
         //if ((c[2] & 0x03 ) == 0x03 ) { //Start(上下同時押しはないと言う前提で書いてるので、注意！）
         Serial.println("Start");
-
       } else  if ((c[2] & 0x04) == 0x04 && (c[2] & 0x08) == 0x08) {//左右同時押しはないと言う前提で書いてるので、注意！）
-        // if ((c[2] & 0x0C ) == 0x0C ) { //Select
+        if ((c[2] & 0x0C ) == 0x0C ) { //Select
         Serial.println("Select");
-
       } else {
-
-
         if ((c[2] & 0x01) == 0x01 ) { //上
-          Serial.println("↑Up");    
+          Serial.println("↑Up");
         }
         if ((c[2] & 0x02) == 0x02 ) { //下
           Serial.println("↓Down");
@@ -112,6 +202,7 @@ void loop() {
         }
       }
     }
+  }
   }
 }
 
