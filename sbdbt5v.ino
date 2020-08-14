@@ -71,6 +71,7 @@ void loop() {
       Serial.print(Ly);
       int powerx = map(abs(Lx-64),0,64,0,200);
       int powery = map(abs(-64-Ly),0,64,0,200);
+      int power  = sqrt(pow(powerx,2) + pow(powery,2) );
       //Serial.print(powerx); //１６進数で数値を表示。
       //Serial.print(",");//}//コンマで区切る。
       //Serial.print(powery); //１６進数で数値を表示。
